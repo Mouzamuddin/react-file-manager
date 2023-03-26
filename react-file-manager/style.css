@@ -1,0 +1,62 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+#header {
+  margin: 0;
+  background-color: lightgray;
+  height: 4rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+#header h1 {
+  margin: 0;
+  padding-left: 1rem;
+  line-height: 4rem;
+}
+
+.user-data {
+  display: flex;
+}
+.user-data img {
+  margin: 0.5rem;
+}
+.user-data p {
+  margin: 0;
+  line-height: 4rem;
+  font-size: 1.5rem;
+}
+
+#logoutBtn {
+  height: 2rem;
+  justify-content: center;
+  align-self: center;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+#login {
+  position: absolute;
+  left: calc(50% - 122.5px);
+  margin-top: 5rem;
+  text-align: center;
+}
+
+#body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#body p{
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
