@@ -10,13 +10,12 @@ const App = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [contents, setContents] = useState([]);
 
-  //move all the variables to env
+  
   //Configuring AWS S3
   AWS.config.update({
-    accessKeyId: EnterAWSacessesKey,
-
-    secretAccessKey: EnterAWSsecretAcessesKey,
-    region: EnterAWSregion,
+    accessKeyId: process.env.REACT_APP_AWSaccessKeyId,
+    secretAccessKey: process.env.REACT_APP_AWSsecretAccessKey,
+    region: process.env.REACT_APP_AWSregion,
   });
 
   const s3 = new AWS.S3();
@@ -27,10 +26,9 @@ const App = () => {
 
   //Listing all files in the S3 bucket
   const listObjects = () => {
-    console.log("listed again");
     const prefix = userData.sub + "/";
     const params = {
-      Bucket: EnterAwsBucketName,
+      Bucket: process.env.REACT_APP_AWSBucketname,
       Prefix: prefix,
     };
     s3.listObjects(params, (err, data) => {
@@ -38,7 +36,6 @@ const App = () => {
         console.error(err);
         return;
       }
-      //add else if error
       setContents(data.Contents);
     });
   };
@@ -48,14 +45,11 @@ const App = () => {
     event.preventDefault();
     const prefix = userData.sub + "/";
 
-    console.log(selectedFile);
-
     s3.putObject(
       {
         //use env for bucket name
-        Bucket: EnterAwsBucketName,
+        Bucket: process.env.REACT_APP_AWSBucketname,
         Key: prefix + selectedFile.name,
-        
         Body: selectedFile,
       },
       (err, data) => {
@@ -67,30 +61,46 @@ const App = () => {
         }
       }
     );
+    document.getElementById("myFile").form.reset()
   };
 
+
+  const handleFileDelete = async (event) =>{
+ 
+  s3.deleteObject( {
+    //use env for bucket name
+    Bucket: process.env.REACT_APP_AWSBucketname,
+    Key: event.target.name,
+    //Body: selectedFile,
+  },
+  (err, data) => {
+    if (err) {
+      console.log(err);
+    } else {
+      listObjects();
+      console.log(`Successfully Deleted ${event.target.name}`);
+    }
+  });
+  }
 
   // Downloading file from S3 bucket
   const handleFileDownload = (event) => {
     event.preventDefault();
-    //file = event.target.innerText;
-    file = userData.sub + "/" + event.target.name;
-    console.log(file)
+   
     s3.getObject(
       {
         //use env for variable
-        Bucket: EnterAwsBucketName,
-        Key: file,
+        Bucket: process.env.REACT_APP_AWSBucketname,
+        Key: event.target.name,
       },
       (err, data) => {
         if (err) {
           console.log(err);
         } else {
-          console.log(data);
           const url = window.URL.createObjectURL(new Blob([data.Body]));
           const link = document.createElement("a");
           link.href = url;
-          link.setAttribute("download", file);
+          link.setAttribute("download", event.target.name);
           document.body.appendChild(link);
           link.click();
         }
@@ -100,7 +110,6 @@ const App = () => {
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
-    console.log(e.target.files[0]);
   };
 
   const logout = () => {
@@ -118,7 +127,6 @@ const App = () => {
             var decoded = jwt_decode(credentialResponse.credential);
             setUserData(decoded);
             document.getElementById("login").hidden = true;
-            
           }}
           onError={() => {
             console.log("Login Failed");
@@ -143,19 +151,23 @@ const App = () => {
 
           <p> {userData.name}'s Files:</p>
 
-          <ul>
+          <ol>
             {contents.map((obj) => {
               return (
-                <div key={obj.Key}>
+                <div id="file-list"key={obj.Key}>
                   
-                  <li>{obj.Key.split("/")[1]}<button name={obj.Key.split("/")[1]} onClick={handleFileDownload}> download</button><button name={obj.Key.split("/")[1]} onClick={handleFileDelete}> delete</button></li>
-                  
+                  <li>{obj.Key.split("/")[1]} </li>
+                  <div id="btns">
+                  <button name={obj.Key} onClick={handleFileDownload}>Download</button>
+                  <button name={obj.Key} onClick={handleFileDelete}>Delete</button>
+                  </div>
+                 
+                
                 </div>
               );
             })}
-          </ul>
+          </ol>
 
-          
         </div>
       )}
     </>
@@ -163,4 +175,3 @@ const App = () => {
 };
 
 export default App;
-

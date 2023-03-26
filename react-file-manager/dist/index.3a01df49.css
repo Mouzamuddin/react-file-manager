@@ -59,4 +59,18 @@ html, body {
   font-weight: 700;
 }
 
+ol {
+  width: 60%;
+}
+
+#file-list {
+  justify-content: space-between;
+  margin: .5rem;
+  display: flex;
+}
+
+#btns button {
+  margin: 0 .5rem;
+}
+
 /*# sourceMappingURL=index.3a01df49.css.map */

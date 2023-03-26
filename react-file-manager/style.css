@@ -60,3 +60,15 @@ body {
     margin-bottom: 1rem;
 }
 
+ol { 
+  width : 60%;
+}
+#file-list{
+    display: flex;
+    justify-content: space-between;
+    margin:0.5rem;
+}
+
+#btns button{
+  margin: 0 0.5rem;
+}
