@@ -13,10 +13,10 @@ const App = () => {
   //move all the variables to env
   //Configuring AWS S3
   AWS.config.update({
-    accessKeyId: process.env.REACT_APP_AWSaccessKeyId,
+    accessKeyId: EnterAWSacessesKey,
 
-    secretAccessKey: process.env.REACT_APP_AWSsecretAccessKey,
-    region: process.env.REACT_APP_AWSregion,
+    secretAccessKey: EnterAWSsecretAcessesKey,
+    region: EnterAWSregion,
   });
 
   const s3 = new AWS.S3();
@@ -30,7 +30,7 @@ const App = () => {
     console.log("listed again");
     const prefix = userData.sub + "/";
     const params = {
-      Bucket: "ENTER_AWSBUCKETNAME",
+      Bucket: EnterAwsBucketName,
       Prefix: prefix,
     };
     s3.listObjects(params, (err, data) => {
@@ -53,8 +53,9 @@ const App = () => {
     s3.putObject(
       {
         //use env for bucket name
-        Bucket: "ENTER_AWSBUCKETNAME",
+        Bucket: EnterAwsBucketName,
         Key: prefix + selectedFile.name,
+        
         Body: selectedFile,
       },
       (err, data) => {
@@ -68,15 +69,17 @@ const App = () => {
     );
   };
 
+
   // Downloading file from S3 bucket
   const handleFileDownload = (event) => {
     event.preventDefault();
     //file = event.target.innerText;
-    file = userData.sub + "/" + event.target.innerText;
+    file = userData.sub + "/" + event.target.name;
+    console.log(file)
     s3.getObject(
       {
         //use env for variable
-        Bucket: "ENTER_AWSBUCKETNAME",
+        Bucket: EnterAwsBucketName,
         Key: file,
       },
       (err, data) => {
@@ -115,8 +118,7 @@ const App = () => {
             var decoded = jwt_decode(credentialResponse.credential);
             setUserData(decoded);
             document.getElementById("login").hidden = true;
-            console.log(process.env.REACT_APP_AWSaccessKeyId);
-            console.log(process.env.REACT_APP_AWSsecretAccessKey);
+            
           }}
           onError={() => {
             console.log("Login Failed");
@@ -137,18 +139,23 @@ const App = () => {
             <button type="submit" onClick={handleFileUpload}>
               Upload
             </button>
-            {/* <input type="submit" value="download" onClick={handleFileDownload} /> */}
           </form>
 
           <p> {userData.name}'s Files:</p>
-          
+
           <ul>
-            {contents.map((obj) => (
-              <li key={obj.Key} onClick={handleFileDownload}>
-                {obj.Key.split("/")[1]}
-              </li>
-            ))}
+            {contents.map((obj) => {
+              return (
+                <div key={obj.Key}>
+                  
+                  <li>{obj.Key.split("/")[1]}<button name={obj.Key.split("/")[1]} onClick={handleFileDownload}> download</button><button name={obj.Key.split("/")[1]} onClick={handleFileDelete}> delete</button></li>
+                  
+                </div>
+              );
+            })}
           </ul>
+
+          
         </div>
       )}
     </>
@@ -156,3 +163,4 @@ const App = () => {
 };
 
 export default App;
+
